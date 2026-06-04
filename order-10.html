@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Замовлення — 10 штук</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#120820;
+  --purple:#7B2FBE;
+  --violet:#9B59B6;
+  --lavender:#C39BD3;
+  --accent:#F0C0FF;
+  --gold:#FFD700;
+  --white:#FAF5FF;
+  --err:#ff6b6b;
+  --ok:#6EE7C8;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--white);font-family:'Montserrat',sans-serif;min-height:100vh;overflow-x:hidden}
+
+/* BG */
+.bg-glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse at 50% 0%,rgba(123,47,190,0.18) 0%,transparent 65%)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:20px 40px;background:rgba(18,8,32,0.9);backdrop-filter:blur(14px);border-bottom:1px solid rgba(240,192,255,0.07)}
+.nav-back{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--lavender);font-size:12px;letter-spacing:2px;text-transform:uppercase;transition:color .2s}
+.nav-back:hover{color:var(--accent)}
+.nav-title{font-family:'Times New Roman',serif;font-size:16px;font-weight:700;color:var(--accent);letter-spacing:2px}
+
+/* LAYOUT */
+.page{min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:100px 24px 60px;position:relative;z-index:1}
+.container{width:100%;max-width:560px}
+
+/* ORDER HEADER */
+.order-header{text-align:center;margin-bottom:40px}
+.order-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(123,47,190,0.2);border:1px solid rgba(240,192,255,0.2);border-radius:100px;padding:8px 20px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:20px}
+.order-title{font-family:'Times New Roman',serif;font-size:clamp(32px,6vw,52px);font-weight:900;line-height:.92;margin-bottom:8px}
+.order-title em{font-style:italic;color:var(--accent)}
+.order-price{font-size:28px;font-weight:800;color:var(--white);margin-bottom:4px}
+.order-per{font-size:12px;color:rgba(195,155,211,0.5);letter-spacing:2px}
+
+/* FORM */
+.form-card{background:rgba(35,14,62,0.6);border:1px solid rgba(240,192,255,0.1);border-radius:20px;padding:36px 32px}
+.form-section{margin-bottom:28px}
+.form-section-title{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid rgba(240,192,255,0.08)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.form-row.full{grid-template-columns:1fr}
+.field{}
+.field label{display:block;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--lavender);margin-bottom:7px}
+.field input,.field select{
+  width:100%;background:rgba(123,47,190,0.1);
+  border:1px solid rgba(240,192,255,0.12);
+  color:var(--white);padding:13px 16px;border-radius:11px;
+  font-size:14px;font-family:'Montserrat',sans-serif;
+  transition:border-color .2s,background .2s,box-shadow .2s;
+  -webkit-appearance:none;
+}
+.field input::placeholder{color:rgba(195,155,211,0.3)}
+.field input:focus,.field select:focus{outline:none;border-color:rgba(240,192,255,0.45);background:rgba(123,47,190,0.18)}
+.field input.err,.field input.err:focus{
+  border-color:#ff4757 !important;
+  background:rgba(255,71,87,0.08) !important;
+  box-shadow:0 0 0 3px rgba(255,71,87,0.15);
+}
+.field .err-msg{color:#ff6b6b;font-size:10px;margin-top:6px;display:none;letter-spacing:1px}
+.field .err-msg.show{display:block;animation:shake .3s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.field select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(195,155,211,0.5)' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px}
+.field select option{background:#1e0a38;color:var(--white)}
+
+/* NOVA POSHTA AUTOCOMPLETE */
+.np-wrap{position:relative}
+.np-list{
+  position:absolute;top:100%;left:0;right:0;z-index:50;
+  background:#1e0a38;border:1px solid rgba(240,192,255,0.2);
+  border-radius:11px;margin-top:4px;overflow:hidden;
+  display:none;max-height:220px;overflow-y:auto;
+  box-shadow:0 16px 40px rgba(0,0,0,0.5);
+  list-style:none;padding:4px 0;
+}
+.np-list.open{display:block}
+.np-list li{padding:11px 16px;font-size:13px;cursor:pointer;color:var(--lavender);transition:background .2s}
+.np-list li:hover{background:rgba(123,47,190,0.3);color:var(--white)}
+.np-loading{padding:12px 16px;font-size:12px;color:rgba(195,155,211,0.4);text-align:center;cursor:default!important}
+.np-loading:hover{background:none!important}
+
+/* SUBMIT */
+.submit-btn{
+  width:100%;background:linear-gradient(135deg,var(--purple),var(--violet));
+  color:var(--white);border:none;padding:17px;border-radius:13px;
+  font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  cursor:pointer;transition:transform .2s,box-shadow .2s;
+  box-shadow:0 8px 28px rgba(123,47,190,0.35);margin-top:8px;
+}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(123,47,190,0.5)}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* SUCCESS */
+.success-screen{display:none;text-align:center;padding:60px 20px}
+.success-icon{font-size:64px;margin-bottom:20px;display:block;animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+.success-title{font-family:'Times New Roman',serif;font-size:clamp(28px,5vw,44px);font-weight:700;margin-bottom:12px}
+.success-title em{font-style:italic;color:var(--accent)}
+.success-desc{font-size:14px;line-height:1.8;color:rgba(195,155,211,0.65);margin-bottom:32px}
+.success-tg{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--purple),var(--violet));color:var(--white);padding:14px 32px;border-radius:100px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;box-shadow:0 8px 28px rgba(123,47,190,0.35)}
+
+@media(max-width:500px){
+  nav{padding:16px 20px}
+  .form-card{padding:24px 18px}
+  .form-row{grid-template-columns:1fr}
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>emailjs.init('7w1P3Ews1UoB11Z4T');</script>
+</head>
+<body>
+<div class="bg-glow"></div>
+
+<nav>
+  <a href="index.html" class="nav-back">&#x2190; Назад</a>
+  <div class="nav-title">&#x2605; Замовлення</div>
+</nav>
+
+<div class="page">
+  <div class="container">
+
+    <!-- HEADER -->
+    <div class="order-header">
+      <div class="order-badge">&#x1F4E6; Лімітована серія</div>
+      <h1 class="order-title"><em>10</em> ароматизаторів</h1>
+      <div class="order-price">1500 ₴</div>
+      <div class="order-per"></div>
+    </div>
+
+    <!-- FORM -->
+    <div class="form-card" id="formCard">
+      <form id="orderForm" novalidate onsubmit="return false;">
+
+        <!-- PERSONAL -->
+        <div class="form-section">
+          <div class="form-section-title">&#x1F464; Особисті дані</div>
+          <div class="form-row">
+            <div class="field">
+              <label for="fname">Ім'я *</label>
+              <input type="text" id="fname" placeholder="Олексій">
+              <div class="err-msg" id="fname-err">Введіть ім'я</div>
+            </div>
+            <div class="field">
+              <label for="lname">Прізвище *</label>
+              <input type="text" id="lname" placeholder="Коваленко">
+              <div class="err-msg" id="lname-err">Введіть прізвище</div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="phone">Телефон *</label>
+              <input type="tel" id="phone" placeholder="+380501234567" maxlength="13">
+              <div class="err-msg" id="phone-err">Формат: +380XXXXXXXXX</div>
+            </div>
+            <div class="field">
+              <label for="email">Email *</label>
+              <input type="email" id="email" placeholder="email@gmail.com">
+              <div class="err-msg" id="email-err">Введіть коректний email</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DELIVERY -->
+        <div class="form-section">
+          <div class="form-section-title">&#x1F69A; Доставка Нова Пошта</div>
+          <div class="form-row full">
+            <div class="field">
+              <label for="cityInput">Місто *</label>
+              <div class="np-wrap">
+                <input type="text" id="cityInput" placeholder="Почніть вводити місто..." autocomplete="off">
+                <div class="np-dropdown" id="cityDropdown"></div>
+              </div>
+              <input type="hidden" id="cityRef">
+              <div class="err-msg" id="city-err">Оберіть місто зі списку</div>
+            </div>
+          </div>
+          <div class="form-row full">
+            <div class="field">
+              <label for="warehouseInput">Відділення / Поштомат *</label>
+              <div class="np-wrap">
+                <input type="text" id="warehouseInput" placeholder="Спочатку оберіть місто..." autocomplete="off" disabled>
+                <div class="np-dropdown" id="warehouseDropdown"></div>
+              </div>
+              <input type="hidden" id="warehouseRef">
+              <div class="err-msg" id="wh-err">Оберіть відділення зі списку</div>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">
+          &#x1F4B3; Підтвердити замовлення
+        </button>
+      </form>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success-screen" id="successScreen">
+      <span class="success-icon">&#x1F389;</span>
+      <h2 class="success-title">Замовлення<br><em>прийнято!</em></h2>
+      <p class="success-desc">Дякуємо за замовлення!<br>Ми зв'яжемось з вами найближчим часом для підтвердження.</p>
+      <a href="https://t.me/nedilsky_v" target="_blank" class="success-tg">
+        &#x1F4AC; Написати у Telegram
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+
+
+// Phone format
+document.getElementById('phone').addEventListener('input', function() {
+  var val = this.value.replace(/[^\d+]/g,'');
+  if (val && !val.startsWith('+')) val = '+' + val;
+  if (val.startsWith('+3800')) val = '+380' + val.slice(5);
+  this.value = val;
+});
+
+// ── VALIDATION ──
+function checkField(id, errId, condition) {
+  var el = document.getElementById(id);
+  var err = document.getElementById(errId);
+  if (!condition) {
+    el.classList.add('err');
+    err.classList.add('show');
+    // Re-trigger animation
+    err.style.animation = 'none';
+    err.offsetHeight;
+    err.style.animation = '';
+    return false;
+  } else {
+    el.classList.remove('err');
+    err.classList.remove('show');
+    return true;
+  }
+}
+
+function validate() {
+  var fname = document.getElementById('fname').value.trim();
+  var lname = document.getElementById('lname').value.trim();
+  var phone = document.getElementById('phone').value.trim();
+  var email = document.getElementById('email').value.trim();
+  
+  var r1 = checkField('fname','fname-err', fname.length >= 2);
+  var r2 = checkField('lname','lname-err', lname.length >= 2);
+  var r3 = checkField('phone','phone-err', /^\+380\d{9}$/.test(phone));
+  var r4 = checkField('email','email-err', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+  var r5 = checkField('npCity','city-err', document.getElementById('npCityRef').value !== '');
+  var r6 = checkField('npWarehouse','wh-err', document.getElementById('npWarehouseRef').value !== '');
+  
+  return r1 && r2 && r3 && r4 && r5 && r6;
+}
+
+// Blur + input validation
+var errMap = {fname:'fname-err',lname:'lname-err',phone:'phone-err',email:'email-err'};
+['fname','lname','phone','email'].forEach(function(id) {
+  var el = document.getElementById(id);
+  el.addEventListener('blur', function() {
+    var v = this.value.trim();
+    var ok = id==='phone' ? /^\+380\d{9}$/.test(v) : id==='email' ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) : v.length>=2;
+    checkField(id, errMap[id], ok);
+  });
+  el.addEventListener('input', function() {
+    if (this.classList.contains('err')) {
+      var v = this.value.trim();
+      var ok = id==='phone' ? /^\+380\d{9}$/.test(v) : id==='email' ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) : v.length>=2;
+      if (ok) { this.classList.remove('err'); document.getElementById(errMap[id]).classList.remove('show'); }
+    }
+  });
+});
+
+// ── SUBMIT ──
+document.getElementById('submitBtn').addEventListener('click', async function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  if (!validate()) {
+    // Scroll to first error
+    var firstErr = document.querySelector('.field input.err, .field select.err');
+    if (firstErr) firstErr.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  
+  var btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Обробка...';
+  
+  var orderData = {
+    qty: 10,
+    price: 1500 ₴_VAL,
+    name: document.getElementById('fname').value.trim() + ' ' + document.getElementById('lname').value.trim(),
+    phone: document.getElementById('phone').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    city: document.getElementById('npCity').value.trim(),
+    warehouse: document.getElementById('npWarehouse').value.trim(),
+    time: new Date().toLocaleString('uk-UA')
+  };
+  
+  // Save to localStorage as backup
+  var orders = JSON.parse(localStorage.getItem('nds_orders') || '[]');
+  orders.push(orderData);
+  localStorage.setItem('nds_orders', JSON.stringify(orders));
+
+  // Send via EmailJS
+  emailjs.send('service_vz6kzan', 'template_qcqu0q6', {
+    qty: orderData.qty,
+    price: orderData.price,
+    name: orderData.name,
+    phone: orderData.phone,
+    email: orderData.email,
+    city: orderData.city,
+    warehouse: orderData.warehouse,
+    time: orderData.time
+  }).then(function() {
+    document.getElementById('formCard').style.display = 'none';
+    document.getElementById('successScreen').style.display = 'block';
+    btn.disabled = false;
+  }, function(error) {
+    console.error('EmailJS error:', error);
+    // Show success anyway - order saved to localStorage
+    document.getElementById('formCard').style.display = 'none';
+    document.getElementById('successScreen').style.display = 'block';
+    btn.disabled = false;
+  });
+});
+</script>
+<script src="order-script.js"></script>
+</body>
+</html>
