@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Замовлення — 5 шт</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#120820;--purple:#7B2FBE;--violet:#9B59B6;
+  --lavender:#C39BD3;--accent:#F0C0FF;--white:#FAF5FF;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--white);font-family:'Montserrat',sans-serif;min-height:100vh;overflow-x:hidden}
+.bg-glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse at 50% 0%,rgba(123,47,190,0.18) 0%,transparent 65%)}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:20px 40px;background:rgba(18,8,32,0.9);backdrop-filter:blur(14px);border-bottom:1px solid rgba(240,192,255,0.07)}
+.nav-back{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--lavender);font-size:12px;letter-spacing:2px;text-transform:uppercase;transition:color .2s}
+.nav-back:hover{color:var(--accent)}
+.nav-title{font-family:'Times New Roman',serif;font-size:16px;font-weight:700;color:var(--accent);letter-spacing:2px}
+.page{min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:100px 24px 60px;position:relative;z-index:1}
+.container{width:100%;max-width:560px}
+.order-header{text-align:center;margin-bottom:40px}
+.order-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(123,47,190,0.2);border:1px solid rgba(240,192,255,0.2);border-radius:100px;padding:8px 20px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:20px}
+.order-title{font-family:'Times New Roman',serif;font-size:clamp(32px,6vw,52px);font-weight:900;line-height:.92;margin-bottom:8px}
+.order-title em{font-style:italic;color:var(--accent)}
+.order-price{font-size:28px;font-weight:800;color:var(--white);margin-bottom:4px}
+.form-card{background:rgba(35,14,62,0.6);border:1px solid rgba(240,192,255,0.1);border-radius:20px;padding:36px 32px}
+.form-section{margin-bottom:28px}
+.form-section-title{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid rgba(240,192,255,0.08)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.form-row.full{grid-template-columns:1fr}
+.field label{display:block;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--lavender);margin-bottom:7px}
+.field input{width:100%;background:rgba(123,47,190,0.1);border:1px solid rgba(240,192,255,0.12);color:var(--white);padding:13px 16px;border-radius:11px;font-size:14px;font-family:'Montserrat',sans-serif;transition:border-color .2s,background .2s,box-shadow .2s}
+.field input::placeholder{color:rgba(195,155,211,0.3)}
+.field input:focus{outline:none;border-color:rgba(240,192,255,0.45);background:rgba(123,47,190,0.18)}
+.field input.err{border-color:#ff4757!important;background:rgba(255,71,87,0.08)!important;box-shadow:0 0 0 3px rgba(255,71,87,0.15)}
+.field .err-msg{color:#ff6b6b;font-size:10px;margin-top:6px;display:none;letter-spacing:1px}
+.field .err-msg.show{display:block;animation:shake .3s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.submit-btn{width:100%;background:linear-gradient(135deg,var(--purple),var(--violet));color:var(--white);border:none;padding:17px;border-radius:13px;font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 8px 28px rgba(123,47,190,0.35);margin-top:8px}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(123,47,190,0.5)}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+/* SUCCESS */
+.success-screen{display:none;text-align:center;padding:40px 10px 60px}
+.success-icon{font-size:64px;margin-bottom:16px;display:block;animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+.success-title{font-family:'Times New Roman',serif;font-size:clamp(28px,5vw,44px);font-weight:700;margin-bottom:10px}
+.success-title em{font-style:italic;color:var(--accent)}
+.success-desc{font-size:14px;line-height:1.8;color:rgba(195,155,211,0.65);margin-bottom:28px}
+/* CODES */
+.codes-wrap{background:rgba(35,14,62,0.7);border:1px solid rgba(240,192,255,0.15);border-radius:16px;padding:24px;margin-bottom:28px;text-align:left}
+.codes-label{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:14px;display:block}
+.code-row{display:flex;align-items:center;justify-content:space-between;background:rgba(123,47,190,0.12);border:1px solid rgba(240,192,255,0.1);border-radius:10px;padding:10px 14px;margin-bottom:8px;gap:10px}
+.code-row:last-child{margin-bottom:0}
+.code-val{font-family:monospace;font-size:15px;font-weight:700;letter-spacing:3px;color:var(--white);flex:1;word-break:break-all}
+.copy-btn{background:rgba(240,192,255,0.1);border:1px solid rgba(240,192,255,0.2);color:var(--accent);padding:6px 12px;border-radius:7px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:background .2s,transform .1s;white-space:nowrap;flex-shrink:0}
+.copy-btn:hover{background:rgba(240,192,255,0.2)}
+.copy-btn.copied{background:rgba(110,231,200,0.15);border-color:rgba(110,231,200,0.4);color:#6EE7C8}
+.copy-all-btn{width:100%;background:rgba(240,192,255,0.07);border:1px solid rgba(240,192,255,0.18);color:var(--accent);padding:11px;border-radius:10px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:background .2s;margin-top:12px}
+.copy-all-btn:hover{background:rgba(240,192,255,0.14)}
+/* SUPPORT */
+.support-block{background:rgba(35,14,62,0.5);border:1px solid rgba(240,192,255,0.08);border-radius:14px;padding:18px 20px;margin-bottom:20px;text-align:center}
+.support-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--lavender);margin-bottom:10px;display:block}
+.support-email{display:inline-flex;align-items:center;gap:7px;color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;margin-bottom:4px}
+.support-email:hover{text-decoration:underline}
+/* BUTTONS */
+.pay-btn{display:block;width:100%;text-align:center;background:linear-gradient(135deg,var(--purple),var(--violet));color:var(--white);padding:17px 32px;border-radius:13px;font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-decoration:none;box-shadow:0 8px 28px rgba(123,47,190,0.35);transition:transform .2s,box-shadow .2s;margin-bottom:12px}
+.pay-btn:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(123,47,190,0.5)}
+.tg-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;background:rgba(123,47,190,0.15);border:1px solid rgba(240,192,255,0.18);color:var(--accent);padding:14px 32px;border-radius:13px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:background .2s}
+.tg-btn:hover{background:rgba(123,47,190,0.28)}
+@media(max-width:500px){nav{padding:16px 20px}.form-card{padding:24px 18px}.form-row{grid-template-columns:1fr}.code-val{font-size:12px;letter-spacing:2px}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>emailjs.init('7w1P3Ews1UoB11Z4T');</script>
+</head>
+<body>
+<div class="bg-glow"></div>
+<nav>
+  <a href="index.html" class="nav-back">&#x2190; Назад</a>
+  <div class="nav-title">&#x2605; Замовлення</div>
+</nav>
+<div class="page">
+  <div class="container">
+    <div class="order-header">
+      <div class="order-badge">&#x1F4E6; Лімітована серія</div>
+      <h1 class="order-title"><em>5</em> ароматизаторів</h1>
+      <div class="order-price">750 ₴</div>
+    </div>
+    <div class="form-card" id="formCard">
+      <form id="orderForm" novalidate onsubmit="return false;">
+        <div class="form-section">
+          <div class="form-section-title">&#x1F464; Особисті дані</div>
+          <div class="form-row">
+            <div class="field">
+              <label for="fname">Ім'я *</label>
+              <input type="text" id="fname" placeholder="Олексій">
+              <div class="err-msg" id="fname-err">Введіть ім'я</div>
+            </div>
+            <div class="field">
+              <label for="lname">Прізвище *</label>
+              <input type="text" id="lname" placeholder="Коваленко">
+              <div class="err-msg" id="lname-err">Введіть прізвище</div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="phone">Телефон *</label>
+              <input type="tel" id="phone" placeholder="+380501234567" maxlength="13">
+              <div class="err-msg" id="phone-err">Формат: +380XXXXXXXXX</div>
+            </div>
+            <div class="field">
+              <label for="email">Email *</label>
+              <input type="email" id="email" placeholder="email@gmail.com">
+              <div class="err-msg" id="email-err">Введіть коректний email</div>
+            </div>
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="form-section-title">&#x1F69A; Доставка Нова Пошта</div>
+          <div class="form-row full">
+            <div class="field">
+              <label for="city">Місто *</label>
+              <input type="text" id="city" placeholder="Київ">
+              <div class="err-msg" id="city-err">Введіть місто</div>
+            </div>
+          </div>
+          <div class="form-row full">
+            <div class="field">
+              <label for="warehouse">Відділення / Поштомат *</label>
+              <input type="text" id="warehouse" placeholder="Відділення №1 або Поштомат №123">
+              <div class="err-msg" id="wh-err">Введіть відділення</div>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="submit-btn" id="submitBtn">
+          &#x1F4B3; Підтвердити замовлення
+        </button>
+      </form>
+    </div>
+
+    <div class="success-screen" id="successScreen">
+      <span class="success-icon">&#x1F389;</span>
+      <h2 class="success-title">Замовлення<br><em>прийнято!</em></h2>
+      <p class="success-desc">Дякуємо за замовлення!<br>Збережіть ваші коди участі — вони знадобляться при отриманні.</p>
+
+      <div class="codes-wrap">
+        <span class="codes-label">&#x1F3AB; Ваші коди участі</span>
+        <div id="codesList"></div>
+        <button class="copy-all-btn" id="copyAllBtn" onclick="copyAll()">&#x1F4CB; Скопіювати всі коди</button>
+      </div>
+
+      <div class="support-block">
+        <span class="support-label">&#x1F4AC; Підтримка</span>
+        <a href="mailto:Nedilskystudio@gmail.com" class="support-email">&#x2709;&#xFE0F; Nedilskystudio@gmail.com</a>
+      </div>
+
+      <a href="https://ibanoplata.com/iban-qr/b98cb783e67640d5a090c2df4be048ab" target="_blank" class="pay-btn">&#x1F4B3; Оплатити</a>
+      
+    </div>
+  </div>
+</div>
+<script>
+var QTY = 5;
+var generatedCodes = [];
+
+function genCode() {
+  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var parts = [];
+  for (var p = 0; p < 3; p++) {
+    var part = '';
+    for (var i = 0; i < 4; i++) part += chars[Math.floor(Math.random() * chars.length)];
+    parts.push(part);
+  }
+  return parts.join('-');
+}
+
+function copyCode(btn, code) {
+  navigator.clipboard.writeText(code).then(function() {
+    var orig = btn.textContent;
+    btn.textContent = '✓ Скопійовано';
+    btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function copyAll() {
+  var text = generatedCodes.join('\n');
+  navigator.clipboard.writeText(text).then(function() {
+    var btn = document.getElementById('copyAllBtn');
+    btn.textContent = '✓ Всі коди скопійовано!';
+    setTimeout(function() { btn.innerHTML = '&#x1F4CB; Скопіювати всі коди'; }, 2500);
+  });
+}
+
+function renderCodes() {
+  generatedCodes = [];
+  for (var i = 0; i < QTY; i++) generatedCodes.push(genCode());
+  var list = document.getElementById('codesList');
+  list.innerHTML = '';
+  generatedCodes.forEach(function(code, idx) {
+    var row = document.createElement('div');
+    row.className = 'code-row';
+    row.innerHTML = '<span class="code-val">' + (idx+1) + '. ' + code + '</span><button class="copy-btn" onclick="copyCode(this,\'' + code + '\')">&#x1F4CB; Копія</button>';
+    list.appendChild(row);
+  });
+}
+
+// Phone format
+document.getElementById('phone').addEventListener('input', function() {
+  var val = this.value.replace(/[^\d+]/g,'');
+  if (val && !val.startsWith('+')) val = '+' + val;
+  if (val.startsWith('+3800')) val = '+380' + val.slice(5);
+  this.value = val;
+});
+
+function checkField(id, errId, condition) {
+  var el = document.getElementById(id);
+  var err = document.getElementById(errId);
+  if (!condition) {
+    el.classList.add('err');
+    err.classList.add('show');
+    err.style.animation='none'; err.offsetHeight; err.style.animation='';
+    return false;
+  } else {
+    el.classList.remove('err');
+    err.classList.remove('show');
+    return true;
+  }
+}
+
+function validate() {
+  var fname = document.getElementById('fname').value.trim();
+  var lname = document.getElementById('lname').value.trim();
+  var phone = document.getElementById('phone').value.trim();
+  var email = document.getElementById('email').value.trim();
+  var city  = document.getElementById('city').value.trim();
+  var wh    = document.getElementById('warehouse').value.trim();
+  var r1 = checkField('fname','fname-err', fname.length >= 2);
+  var r2 = checkField('lname','lname-err', lname.length >= 2);
+  var r3 = checkField('phone','phone-err', /^\+380\d{9}$/.test(phone));
+  var r4 = checkField('email','email-err', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+  var r5 = checkField('city','city-err', city.length >= 2);
+  var r6 = checkField('warehouse','wh-err', wh.length >= 2);
+  return r1 && r2 && r3 && r4 && r5 && r6;
+}
+
+var errMap = {fname:'fname-err',lname:'lname-err',phone:'phone-err',email:'email-err',city:'city-err',warehouse:'wh-err'};
+['fname','lname','phone','email','city','warehouse'].forEach(function(id) {
+  var el = document.getElementById(id);
+  el.addEventListener('blur', function() {
+    var v = this.value.trim();
+    var ok = id==='phone' ? /^\+380\d{9}$/.test(v) : id==='email' ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) : v.length>=2;
+    checkField(id, errMap[id], ok);
+  });
+  el.addEventListener('input', function() {
+    if (this.classList.contains('err')) {
+      var v = this.value.trim();
+      var ok = id==='phone' ? /^\+380\d{9}$/.test(v) : id==='email' ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) : v.length>=2;
+      if (ok) { this.classList.remove('err'); document.getElementById(errMap[id]).classList.remove('show'); }
+    }
+  });
+});
+
+document.getElementById('submitBtn').addEventListener('click', async function(e) {
+  e.preventDefault(); e.stopPropagation();
+  if (!validate()) {
+    var firstErr = document.querySelector('.field input.err');
+    if (firstErr) firstErr.scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+  var btn = this;
+  btn.disabled = true;
+  btn.textContent = '⏳ Обробка...';
+  renderCodes();
+  var orderData = {
+    qty: QTY,
+    price: '750 ₴',
+    codes: generatedCodes.join(', '),
+    name: document.getElementById('fname').value.trim() + ' ' + document.getElementById('lname').value.trim(),
+    phone: document.getElementById('phone').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    city: document.getElementById('city').value.trim(),
+    warehouse: document.getElementById('warehouse').value.trim(),
+    time: new Date().toLocaleString('uk-UA')
+  };
+  emailjs.send('service_vz6kzan','template_qcqu0q6',{
+    qty: orderData.qty, price: orderData.price,
+    name: orderData.name, phone: orderData.phone,
+    email: orderData.email, city: orderData.city,
+    warehouse: orderData.warehouse, time: orderData.time,
+    codes: orderData.codes
+  }).then(function() {
+    document.getElementById('formCard').style.display='none';
+    document.getElementById('successScreen').style.display='block';
+    window.scrollTo({top:0,behavior:'smooth'});
+    btn.disabled=false;
+  }, function(err) {
+    console.error('EmailJS:', err);
+    document.getElementById('formCard').style.display='none';
+    document.getElementById('successScreen').style.display='block';
+    window.scrollTo({top:0,behavior:'smooth'});
+    btn.disabled=false;
+  });
+});
+</script>
+</body>
+</html>
